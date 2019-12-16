@@ -4,14 +4,5 @@
 
 Graph::Graph()
 {
-
-
 }
 
-
-Graph::~Graph()
-{
-
-
-
-}
