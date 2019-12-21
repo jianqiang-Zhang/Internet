@@ -98,29 +98,32 @@ void Graph::AddPoint()
 			matrix[i][number - 1] = maxDistence;
 			matrix[number - 1][i] = maxDistence;
 		}
-		cout << "请输入这个编号为"<<number<<"的路由器和哪个路由器相连,输入0结束" << endl;
 		while (1)
 		{
 			//循环加边
 			int heavy = 0;
 			int a = 1;//临时的变量,保存被连接的路由器编号
+			cout << "请输入这个编号为" << number << "的路由器和哪个路由器相连,输入0结束" << endl;
 			cin >> a;
 			if(a==0)
 			{
 				break;
 			}
-			cout << "请输入这个新路由器到该相邻节点的权重" << endl;
-			cin >> heavy;			
-			//同时也要给相应的被连接的路由器加边
-			/*for (int i = 0; i < number - 1; i++)
+			else if (matrix[a - 1][0] == -1)
 			{
-				timeEdge[i] = hold[a - 1].edge[i];
+				cout << "不存在对应的结点" << endl;
 			}
-			timeEdge[number - 1] = heavy;*/
-			//更新邻接矩阵
-			matrix[number - 1][number - 1] = 0;
-			matrix[number - 1][a - 1] = heavy;
-			matrix[a-1][number - 1] = heavy;
+			else
+			{
+				cout << "请输入这个新路由器到该相邻节点的权重" << endl;
+				cin >> heavy;
+				//同时也要给相应的被连接的路由器加边
+				//更新邻接矩阵
+				matrix[number - 1][number - 1] = 0;
+				matrix[number - 1][a - 1] = heavy;
+				matrix[a - 1][number - 1] = heavy;
+				cout << "添加完成" << endl;
+			}
 		}
 		//更新存放所有路由器的数组		
 		char judge;
@@ -154,7 +157,10 @@ void Graph::AddEdge()
 		else if (matrix[head - 1][tail - 1] != maxDistence)
 			cout << "该边已经存在" << endl;
 		else
+		{
 			matrix[head - 1][tail - 1] = heavy;
+			cout << "添加完成" << endl;
+		}
 		char judge;
 		cout << "是否需要继续加边,（输入n结束）" << endl;
 		cin >> judge;
@@ -195,7 +201,10 @@ void Graph::DeleteEdge()
 		else if (matrix[head - 1][tail - 1] == maxDistence)
 			cout << "该边不存在" << endl;
 		else
+		{
 			matrix[head - 1][tail - 1] = maxDistence;
+			cout << "删除完成" << endl;
+		}
 		char judge;
 		cout << "是否需要继续删除边,（输入n结束）" << endl;
 		cin >> judge;
@@ -213,8 +222,42 @@ void Graph::DeletePoint()
 		int num=0;
 		cout << "请输入需要删除的路由器编号,删除后该路由器编号之后的路由器编号将依次提前一位" << endl;
 		cin >> num;
-
-
+		//开始调整矩阵(先直接调整下邻接矩阵)
+		//先将每一列大于num的依次上调一位
+		if (matrix[num - 1][0] == -1)
+		{
+			cout << "无该路由器，请输入正确的编号" << endl;
+		}
+		else
+		{
+			for (int i = num - 1; i < number; i++)
+				for (int j = num - 1; j < i; j++)
+				{
+					matrix[i][j] = matrix[i][j + 1];
+				}
+			//再将每一行大于num的依次向左挪一位
+			for (int j = 0; j < number; j++)
+				for (int i = num - 1; i < number; i++)
+				{
+					matrix[i][j] = matrix[i + 1][j];
+				}
+			//最后扩充到整个矩阵
+			for (int i = 0; i < number; i++)
+				for (int j = 0; j < i; j++)
+				{
+					matrix[j][i] = matrix[i][j];
+				}
+			cout << "删除完成"<<endl;
+		}
+		cout << "是否需要继续删除结点,输入n结束" << endl;
+		char judge;
+		cin >> judge;
+		if (judge == 'N' || judge == 'n')
+		{
+			break;
+		}
 
 	}
+	SetNode();
+	WriteFile();
 }
